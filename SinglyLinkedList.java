@@ -101,9 +101,47 @@ public class SinglyLinkedList<E extends Comparable<E>> {
 
     // write your codes here
     public void swap(){
-        
+        if (size < 2){
+            return;
+        }
 
+        // Collect the existing nodes in list order.
+        @SuppressWarnings("unchecked")
+        Node<E>[] nodes = new Node[size];
+        Node<E> current = head;
+        for (int i = 0; i < size; i++){
+            nodes[i] = current;
+            current = current.getNext();
+        }
+
+        // order[k] = index (in list order) of the node holding the k-th smallest element.
+        Integer[] order = new Integer[size];
+        for (int i = 0; i < size; i++){
+            order[i] = i;
+        }
+        Arrays.sort(order, (a, b) -> nodes[a].getElement().compareTo(nodes[b].getElement()));
+
+        // rank[i] = how many elements are smaller than the element at list position i.
+        int[] rank = new int[size];
+        for (int k = 0; k < size; k++){
+            rank[order[k]] = k;
+        }
+
+        // The element at position i is replaced by its mirror in sorted order,
+        // so the node holding that mirror value must be moved to position i.
+        @SuppressWarnings("unchecked")
+        Node<E>[] swapped = new Node[size];
+        for (int i = 0; i < size; i++){
+            swapped[i] = nodes[order[size - 1 - rank[i]]];
+        }
+
+        // Relink the nodes into their new sequence.
+        for (int i = 0; i < size - 1; i++){
+            swapped[i].setNext(swapped[i + 1]);
+        }
+        swapped[size - 1].setNext(null);
+        head = swapped[0];
+        tail = swapped[size - 1];
     }
    
 }
-
